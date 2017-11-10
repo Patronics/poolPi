@@ -1,0 +1,78 @@
+<html>
+<head>
+<link rel="stylesheet" href='/static/style.css' />
+<title>{{ title }}</title>
+<script type='text/javascript'>
+<!--
+function showdebug() {
+var hiddencontent=document.getElementsByClassName('hiddendebug');
+if (document.getElementById('showdebug').checked) {
+	
+	var i;
+	for ( i = 0; i < hiddencontent.length; i++){
+		hiddencontent[i].style.display = "inline";
+	}
+	
+}else{
+	var i;
+	for ( i = 0; i < hiddencontent.length; i++){
+		hiddencontent[i].style.display = "none";
+		
+	}
+	
+}
+
+}
+var loadtime = Date.now();
+var pageRefreshCounter = 0;
+var outtxt = "";
+function SecondsSinceLastRefresh(){
+	//pageRefreshCounter++;
+	pageRefreshCounter=Math.round((Date.now()-loadtime)/1000)
+	if (pageRefreshCounter > 7200){
+		outtxt= "" + Math.round(pageRefreshCounter/360)/10 + " hours ago";
+	}else if (pageRefreshCounter > 120){
+		outtxt= "" + Math.round(pageRefreshCounter/6)/10 + " minutes ago";
+	
+	}else{
+		outtxt= "" + pageRefreshCounter + " seconds ago";
+	}
+	document.getElementById("elapsedtime").innerText = outtxt;
+	
+}
+//-->
+</script>
+</head>
+<body class=centered>
+<h1 class='centered'>Hello!</h1>
+<h2 class='centered'>  This page last updated at: {{ time }}; <span id='elapsedtime'>0 Seconds ago</span>
+<script type="text/javascript">
+setInterval(SecondsSinceLastRefresh,1000);
+</script>
+</h2>
+<button type="button" onClick="history.go(0)">Update Now </button>
+<p style="font-size:1.3em;" class='centered'> The current water level for the pool is <strong> {{ poollevel }}% </strong> full! 
+ <span class='important'> <br> +/- 4% </span>
+<br>The latest raw level measurement was <strong>{{ touchval }}<strong><br><br>
+The pump is currently set to <strong>{{ pumpstate }}</strong></p>
+<div class='centered'>
+<button onclick="location.href='/pump/on'" type="button"> Turn on the pump </button> 
+<button onclick="location.href='/pump/off'" type="button"> Turn off the pump </button>
+</div>
+<div class='centered'>
+<h4>Timer:</h4>
+<button onclick="location.href='/pump/cycle/1/1'" type="button"> Cycle pump on 1 Hour, Off 1 Hour </button> 
+<button onclick="location.href='/pump/cycle/2/10'" type="button"> Cycle pump on 2 Hours, Off 12 Hours</button>
+<br>
+<button onclick="location.href='/pump/cyclem/5/5'" type="button"> Cycle pump on 5 minutes, Off 5 minutes (for testing, don't leave active) </button> 
+
+</div>
+
+
+<div class='hiddendebug'>requests = {{ count }} <br>
+raw touch value= {{ touchval }}<br>
+cycleID = {{ cycleid }}</div>
+<div class='bottom'>  <input type='checkbox' id='showdebug' onclick="showdebug()">  <label>  Show debug data  </label>   </div> 
+
+</body>
+</html>

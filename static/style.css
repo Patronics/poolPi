@@ -1,0 +1,32 @@
+body {
+	background:#AACCFF;
+
+
+
+}
+
+.centered {
+	text-align: center;
+}
+
+.important{
+	color:red;
+
+}
+
+div.bottom  {
+	position: absolute;
+	bottom: 10px;
+	height: 20px;
+
+
+
+
+}
+
+.hiddendebug {
+
+	display:none;
+
+
+}
