@@ -1,16 +1,17 @@
-#!/usr/bin/python
-from flask import Flask, render_template, make_response
+#!/usr/bin/python2
+from flask import Flask, render_template, make_response, jsonify
 import datetime, random, time
 from threading import Timer, Thread
 import RPi.GPIO as GPIO
 import serial
+#from flask_cors import CORS
 import logging, chromalog, re
 import random
 from serial import SerialException
 chromalog.basicConfig(level=logging.DEBUG)     #For colored debug terminal #change from .INFO to .DEBUG for more detail
 logger = logging.getLogger()
 app = Flask(__name__)
-
+#CORS(app, resources=r'/pump/(on|/off)')
 ser=serial.Serial('/dev/serial0',4800, timeout=5)
 
 #Setup GPIO
@@ -204,9 +205,30 @@ def pumpoff():
         }
     return render_template("pumpset.html", **templateData)
 
-
-
-
+@app.route("/json")
+def jsonout():
+	now = datetime.datetime.now()
+	timeString = now.strftime("%Y-%m-%d %I:%M:%S %p")
+	
+	#poollevel = random.randrange(100)
+	minlevel=8500       #measured value  8400, rounded for simple math
+	maxlevel=18500      #measured value 18700, rounded
+	global touchval
+	poollevel = (touchval-minlevel)/100
+	global count
+	count=count+1
+	global pumpstate
+	global cycleid
+	return jsonify(
+		title = 'Pool Data',
+		time = timeString,
+		poollevel = poollevel,
+		count = count,
+		touchval = touchval,
+		pumpstate = pumpstate,
+		cycleid = cycleid
+	)
+	
 
 @app.route("/")
 def index():
@@ -250,7 +272,7 @@ try:
 	if __name__ == "__main__":
 		updateThread = Thread(target = update_thread)
 		updateThread.start()
-		app.run(debug=True,port=5000, host='0.0.0.0')
+		app.run(debug=True,port=80, host='0.0.0.0')
 
 
 except KeyboardInterrupt: 
